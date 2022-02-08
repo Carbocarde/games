@@ -3,12 +3,15 @@ from typing import List
 
 
 class Card:
-    def __init__(self, suit, rank):
+    def __init__(self, suit: str, rank: str):
         self.suit = suit
         self.rank = rank
 
 
 class BaseAgent(ABC):
+    def __init__(self, cards: List[Card]):
+        self.cards = cards
+
     @abstractmethod
     def place_cards(self) -> List[Card]:
         """
@@ -16,9 +19,13 @@ class BaseAgent(ABC):
         """
         pass
 
-    def call_bs(self) -> bool:
+    @abstractmethod
+    def call_bs(self, player: int, rank: str, count: int) -> bool:
         """
         Choose to call bs on the most recent card placement
+        player: player that placed cards down
+        rank: type of card played
+        count: number of cards placed down by player
         """
         pass
 
