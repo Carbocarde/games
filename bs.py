@@ -1,12 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-
-class Card:
-    def __init__(self, suit: str, rank: str):
-        self.suit = suit
-        self.rank = rank
-
+from card import Card
 
 class BaseAgent(ABC):
     def __init__(self, cards: List[Card]):
@@ -34,7 +29,7 @@ class Game:
     def __init__(self):
         self.agents = []
 
-    def addAgent(self, agent: BaseAgent):
+    def add_agent(self, agent: BaseAgent):
         self.agents.append(agent)
 
     def simulate(self) -> int:
