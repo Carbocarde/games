@@ -1,9 +1,14 @@
+"""
+Class representing a playing card/deck.
+"""
 from enum import Enum
 from random import shuffle
 from typing import List
 
 
 class Suit(Enum):
+    """Suits of a card"""
+
     CLUB = 1
     HEART = 2
     DIAMOND = 3
@@ -11,6 +16,8 @@ class Suit(Enum):
 
 
 class Rank(Enum):
+    """Numerical rank of each face"""
+
     ACE = 1
     TWO = 2
     THREE = 3
@@ -27,6 +34,10 @@ class Rank(Enum):
 
 
 class Card:
+    """
+    Generic card
+    """
+
     # maybe we need to worry about accidental mutation of cards... curse python for not
     # having constants
 
@@ -45,9 +56,15 @@ class Card:
 
 
 class Deck:
+    """
+    Deck of 52 (or multiple!)
+    """
+
     def __init__(self, number_of_decks: int):
         assert number_of_decks > 0
         self.number_of_decks = number_of_decks
+        self.cards = []
+        self.number_of_cards_dealt = 0
 
         self.reset()
 
@@ -59,7 +76,7 @@ class Deck:
         """
 
         self.cards = []
-        for i in range(self.number_of_decks):
+        for _ in range(self.number_of_decks):
             for suit in Suit:
                 for rank in Rank:
                     self.cards.append(Card(suit, rank))
