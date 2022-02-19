@@ -1,3 +1,7 @@
+"""
+Ranking methods for agents in a game.
+TODO: Add ELO ratings
+"""
 import itertools
 import random
 from typing import List, Dict, Optional
@@ -7,6 +11,12 @@ from game import Game
 
 
 def random_combinations(arr: list, size: int, count: int) -> list:
+    """
+    Return a random subset of combinations
+    :param arr: source array
+    :param size: size of a combination
+    :param count: number of combinations to return
+    """
     combinations = list(itertools.combinations(arr, size))
     output = []
     while count > len(combinations):
@@ -18,6 +28,10 @@ def random_combinations(arr: list, size: int, count: int) -> list:
 
 
 class Rank:
+    """
+    Represents the ranking process
+    """
+
     def __init__(self, game: Game, agents: List[Agent]):
         self.agents = agents
         self.game = game
@@ -59,4 +73,11 @@ class Rank:
             for agent, score in self.ranking.items():
                 ranking += str(score) + " " + str(agent) + "\n"
 
-        return "Game" + str(self.game) + "Agents:" + str(self.agents) + "Ranking: " + ranking
+        return (
+            "Game"
+            + str(self.game)
+            + "Agents:"
+            + str(self.agents)
+            + "Ranking: "
+            + ranking
+        )

@@ -1,11 +1,15 @@
+"""
+bs card game.
+"""
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
 from typing import Union, NamedTuple, List, Optional
-from card import Card, Rank, Deck
 import random
+from card import Card, Rank, Deck
 
 
 def advance_rank(rank: Rank) -> Rank:
+    """Get the next rank card (with wrapping back to ace)"""
     return Rank((rank.value + 1 - Rank.ACE.value) % len(Rank) + Rank.ACE.value)
 
 
@@ -13,6 +17,8 @@ BSPlayerID = int
 
 
 class BSPlay(NamedTuple):
+    """Object representing a player laying down cards"""
+
     player: BSPlayerID
     # Can't name this count for some reason
     number: int
@@ -21,16 +27,22 @@ class BSPlay(NamedTuple):
 
 
 class BSCall(NamedTuple):
+    """Object representing a player calling bs"""
+
     caller: BSPlayerID
     callee: BSPlayerID
     discovered_lie: bool
 
 
 class BSPickup(NamedTuple):
+    """Object representing a player picking up cards"""
+
     cards: List[Card]
 
 
 class BSInit(NamedTuple):
+    """Object representing starting a game of bs"""
+
     players: List[BSPlayerID]
     card_counts: List[int]
 
@@ -39,17 +51,19 @@ BSEvent = Union[BSInit, BSPlay, BSCall, BSPickup]
 
 
 class BSAgent(ABC):
+    """Abstract class for a basic BS agent"""
+
     @abstractmethod
     def request_play(self, rank: Rank) -> BSPlay:
-        pass
+        """Request the agent's move"""
 
     @abstractmethod
     def request_bs(self) -> bool:
-        pass
+        """Ask of the agent wants to call bs"""
 
     @abstractmethod
     def inform_event(self, event: BSEvent):
-        pass
+        """Tell the agent about an event that happened"""
 
 
 class StdioBSAgent(BSAgent):
@@ -76,7 +90,7 @@ class StdioBSAgent(BSAgent):
         return input() == "y"
 
     def inform_event(self, event: BSEvent):
-        if type(event) == BSPickup:
+        if isinstance(event, BSPickup):
             for i, card in enumerate(event.cards):
                 self.print(i, card)
             self.hand += event.cards
@@ -85,6 +99,8 @@ class StdioBSAgent(BSAgent):
 
 
 class BSGame:
+    """Represents a game of bs"""
+
     order: List[BSPlayerID]
     players: Mapping[BSPlayerID, BSAgent]
     hands: dict[BSPlayerID, set[Card]]
