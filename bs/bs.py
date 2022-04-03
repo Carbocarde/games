@@ -103,10 +103,10 @@ class SocketBsAgent(BSAgent):
     hand: List[Card]
 
     def __init__(self, ident: BSPlayerID):
-        self.ident = ident
-        self.hand = []
-
-        self.address = ('localhost', 6000 + int(ident))
+        self.ident   = ident
+        self.hand    = []
+        self.port    = 6000 + int(ident)
+        self.address = ('localhost', self.port)
         self.connect_to_player()
     
     @timeout(3)
