@@ -5,8 +5,10 @@ import os
 import signal
 import functools
 
+
 class TimeoutError(Exception):
     pass
+
 
 def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
     def decorator(func):

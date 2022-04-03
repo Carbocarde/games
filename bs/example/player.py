@@ -8,10 +8,10 @@ if len(args) != 2:
     print("incorrect usage! do: python client.py <port>")
 
 port = int(args[1])
-address = ('localhost', port)
+address = ("localhost", port)
 conn = Client(address)
 
-while (1):
+while 1:
     x = conn.recv()
     print(x)
 

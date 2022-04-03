@@ -9,6 +9,7 @@ from card import Card, Rank, Deck
 from timeout import timeout
 from multiprocessing.connection import Client, Listener
 
+
 def advance_rank(rank: Rank) -> Rank:
     """Get the next rank card (with wrapping back to ace)"""
     return Rank((rank.value + 1 - Rank.ACE.value) % len(Rank) + Rank.ACE.value)
@@ -90,7 +91,7 @@ class StdioBSAgent(BSAgent):
     def request_bs(self) -> bool:
         self.print("Call bs? y/n")
         return input() == "y"
- 
+
     def inform_event(self, event: BSEvent):
         if isinstance(event, BSPickup):
             for i, card in enumerate(event.cards):
@@ -99,16 +100,17 @@ class StdioBSAgent(BSAgent):
         else:
             self.print(event)
 
+
 class SocketBsAgent(BSAgent):
     hand: List[Card]
 
     def __init__(self, ident: BSPlayerID):
-        self.ident   = ident
-        self.hand    = []
-        self.port    = 6000 + int(ident)
-        self.address = ('localhost', self.port)
+        self.ident = ident
+        self.hand = []
+        self.port = 6000 + int(ident)
+        self.address = ("localhost", self.port)
         self.connect_to_player()
-    
+
     @timeout(3)
     def connect_to_player(self):
         self.listener = Listener(self.address)
@@ -134,7 +136,7 @@ class SocketBsAgent(BSAgent):
     def request_bs(self) -> bool:
         self.send("Call bs? y/n")
         return str(self.receive()) == "y"
- 
+
     def inform_event(self, event: BSEvent):
         if isinstance(event, BSPickup):
             for i, card in enumerate(event.cards):
@@ -142,6 +144,7 @@ class SocketBsAgent(BSAgent):
             self.hand += event.cards
         else:
             self.send(event)
+
 
 class BSGame:
     """Represents a game of bs"""
