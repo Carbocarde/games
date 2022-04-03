@@ -6,6 +6,8 @@ from collections.abc import Mapping
 from typing import Union, NamedTuple, List, Optional
 import random
 from card import Card, Rank, Deck
+from timeout import timeout
+from multiprocessing.connection import Client, Listener
 
 
 def advance_rank(rank: Rank) -> Rank:
@@ -81,6 +83,7 @@ class StdioBSAgent(BSAgent):
         self.print("Play requested of rank {}".format(rank))
         self.print("Provide space seperated list of cards you want to play")
         cards = [self.hand[int(i)] for i in input().split(" ")]
+
         return BSPlay(
             player=self.ident, number=len(cards), rank=rank, cards_played=cards
         )
@@ -96,6 +99,51 @@ class StdioBSAgent(BSAgent):
             self.hand += event.cards
         else:
             self.print(event)
+
+
+class SocketBsAgent(BSAgent):
+    hand: List[Card]
+
+    def __init__(self, ident: BSPlayerID):
+        self.ident = ident
+        self.hand = []
+        self.port = 6000 + int(ident)
+        self.address = ("localhost", self.port)
+        self.connect_to_player()
+
+    @timeout(3)
+    def connect_to_player(self):
+        self.listener = Listener(self.address)
+        self.connection = self.listener.accept()
+
+    @timeout(3)
+    def send(self, obj):
+        self.connection.send(str(obj))
+
+    @timeout(3)
+    def receive(self):
+        return self.connection.recv()
+
+    def request_play(self, rank: Rank):
+        self.send("Play requested of rank {}".format(rank))
+        self.send("Provide space seperated list of cards you want to play")
+        cards = [self.hand[int(i)] for i in self.receive().split(" ")]
+
+        return BSPlay(
+            player=self.ident, number=len(cards), rank=rank, cards_played=cards
+        )
+
+    def request_bs(self) -> bool:
+        self.send("Call bs? y/n")
+        return str(self.receive()) == "y"
+
+    def inform_event(self, event: BSEvent):
+        if isinstance(event, BSPickup):
+            for i, card in enumerate(event.cards):
+                self.send(str(i) + " : " + str(card))
+            self.hand += event.cards
+        else:
+            self.send(event)
 
 
 class BSGame:
@@ -197,6 +245,6 @@ class BSGame:
 
 
 if __name__ == "__main__":
-    agents = {1: StdioBSAgent(1), 2: StdioBSAgent(2)}
+    agents = {1: SocketBsAgent(1), 2: StdioBSAgent(2)}
     game = BSGame(agents)
     game.play()
