@@ -6,12 +6,13 @@ from agent import Agent
 
 
 class RPSAgent(Agent, ABC):
-    def __init__(self, id: int):
+    def __init__(self, id: int, port: int):
         self.id = str(id)
+        super().__init__(port)
 
     def play(self):
         choice = self.choose()
-        choice.send()
+        self.post_message(choice)
 
     @abstractmethod
     def choose(self) -> RPSPlay:
