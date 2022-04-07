@@ -2,6 +2,7 @@
 The base class for a generic agent
 """
 from abc import abstractmethod, ABC
+import socket
 
 from action import Action
 
@@ -22,19 +23,23 @@ class RankableAgent:
         """Needed to use this as a key for a dict"""
 
 
-class StdioAgent:
+class SocketAgent:
     """a agent capable of sending/receiving messages"""
+
+    def __init__(self, port):
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.connect(("127.0.0.1", port))
 
     def parse_message(self, action: Action) -> Action:
         """Parse a message"""
-        msg = input()
+        msg = self.s.recv(1024).decode()
         action.parse(msg)
         return action
 
     def post_message(self, action: Action):
         """Send a message to the game"""
-        action.send()
+        self.s.send(str(action).encode())
 
 
-class Agent(RankableAgent, StdioAgent, ABC):
+class Agent(RankableAgent, SocketAgent, ABC):
     """Game agent"""

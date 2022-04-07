@@ -8,9 +8,9 @@ from action import Action
 class Choice(Enum):
     """Possible plays"""
 
-    ROCK = 1
-    PAPER = 2
-    SCISSORS = 3
+    ROCK = 0
+    PAPER = 1
+    SCISSORS = 2
 
 
 class RPSPlay(Action):
@@ -27,3 +27,4 @@ class RPSPlay(Action):
     def parse(self, msg):
         """Parse the choice"""
         self.choice = Choice(int(msg))
+        return self.choice
